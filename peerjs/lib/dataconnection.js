@@ -40,6 +40,7 @@ function DataConnection(peer, provider, options) {
     this._peerBrowser = this.options._payload.browser;
   }
 
+  util.log("startConnection from DataConnection");
   Negotiator.startConnection(
     this,
     this.options._payload || {
@@ -59,6 +60,7 @@ DataConnection.prototype.initialize = function(dc) {
 }
 
 DataConnection.prototype._configureDataChannel = function() {
+  console.log("in _configureDataChannel have _dc = "+this._dc);
   var self = this;
   if (util.supports.sctp) {
     this._dc.binaryType = 'arraybuffer';
@@ -207,7 +209,15 @@ DataConnection.prototype._bufferedSend = function(msg) {
 // Returns true if the send succeeds.
 DataConnection.prototype._trySend = function(msg) {
   try {
-    this._dc.send(msg);
+    var data;
+
+    if ((window.webrtcDetectedBrowser === 'IE' || window.webrtcDetectedBrowser === 'safari') && msg instanceof ArrayBuffer) {
+      data = String.fromCharCode.apply(null, new Uint8Array(msg));
+    } else {     
+      data = msg;
+    }
+
+    this._dc.send(data);
   } catch (e) {
     this._buffering = true;
 
@@ -222,7 +232,6 @@ DataConnection.prototype._trySend = function(msg) {
   return true;
 }
 
-// Try to send the first message in the buffer.
 DataConnection.prototype._tryBuffer = function() {
   if (this._buffer.length === 0) {
     return;
