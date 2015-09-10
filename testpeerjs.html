@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<title>testing peer.js</title>
+
+
+
+
+		<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+		<!-- script src="https://skyway.io/dist/0.3/peer.min.js"></script -->
+		<script src="peerjs/dist/peer.js"></script>
+
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r69/three.min.js"></script>
+		<script type="text/javascript" src="js/character_script.js"></script>
+
+		<script type="text/javascript">
+		console.log("here");
+
+			var backgroundImageUrlsIndex = -1;
+			var backgroundImageUrls = [];
+
+			var savedDrawingStrokes = new Array();
+
+			var socket = null;
+
+			// We'll use a global variable to hold on to our id from PeerJS
+			var peer_id = null;
+			var peer = null;
+
+			var kinectpeerid = null;
+			var dataConnection = null;
+
+			var my_stream = null;
+
+			var modelWidth = 15;
+			var modelHeight = 15;
+			var kinectJoints = [];
+
+			var canvas = null;
+			var context = null;
+
+			var mousedown = false;
+			var modelDrawing = false;
+
+			var x = -1;
+			var y = -1;
+
+			var px = -1;
+			var py = -1;
+
+			var modeldrawx = -1;
+			var modeldrawy = -1;
+			var pmodeldrawx = -1;
+			var pmodeldrawy = -1;
+
+			var color = "rgb("+
+			  Math.floor(Math.random()*128+127)+","+
+			  Math.floor(Math.random()*128+127)+","+
+			  Math.floor(Math.random()*128+127)+")";
+
+
+			function init() {
+				initSocket();
+				initPeerJS();
+			}
+			window.addEventListener('load', init);
+
+
+			function initSocket() {
+
+				socket = io.connect('');
+
+				socket.on('connect', function() {
+					console.log("Socket Connected");
+					if (peer_id != null) {
+						console.log('sending my peer '+peer_id);
+						socket.emit('client_peer_id', peer_id);
+					}
+
+				});
+
+				socket.on('kinect_peer_id', function (data) {
+					// this is how we get the peer id of the kinect data server
+					console.log("kinect server peer id = "+data);
+	
+					if ((kinectpeerid != data) || !dataConnection) {
+						kinectpeerid = data;  
+						if (peer && kinectpeerid) {
+							initKinectServer("socket on kinect_peer_id, peer!=null && kinectpeerid !=null and is new && dataConnection is null");
+						}
+					}
+
+				});
+
+				socket.on('kinect', function (data) {
+					
+				});
+
+	
+
+				socket.on('clear', function (data) {
+					clearCanvas();
+				});
+
+				socket.on('peer_id', function(data) {
+					console.log("Got a peer: " + data);
+					if (peer != null && my_stream != null) {
+						var outgoing_call = peer.call(data, my_stream);
+
+						outgoing_call.on('stream', function(remoteStream) {
+							// we receive a getUserMedia stream from the remote caller
+							// And attach it to a video object
+							var audioElement = document.createElement('audio');
+							audioElement.setAttribute("id",data);
+							audioElement.src = window.URL.createObjectURL(remoteStream) || remoteStream;
+							audioElement.play();
+						});
+					}
+				});
+
+				socket.on('disconnect_peer_id', function(data) {
+					var elementToRemove = document.getElementById(data);
+					if (elementToRemove != null) {
+						elementToRemove.parent.removeChild(elementToRemove);
+					}
+				});
+
+				socket.on('backgrounds', function(data) {
+					console.log(data);
+					backgroundImageUrls = data;
+				});
+			}
+
+var dataConnections = [];
+
+			var initPeerJS = function() {
+				// using peer for datachannel from kinect server, as well as for peer-to-peer audio between browsers
+				// first, connect peer
+
+						peer = new Peer({key: 'uohu08l7r6swcdi'},{'debug':3});
+
+						// Get an ID from the PeerJS server
+						peer.on('open', function(id) {
+							console.log('My peer ID is: ' + id);
+							peer_id = id;
+							if (socket != null) {
+								socket.emit('client_peer_id', peer_id);
+				  			}
+						});	
+
+						peer.on('error', function(err){
+							console.log("Got peer error: "+err);
+						});	
+
+						peer.on('connection', function(dataConnection) { 
+				// add this data connection to the list of client connections
+				dataConnections.push(dataConnection);
+				console.log("Now have "+dataConnections.length+" connections: "+dataConnections);
+
+
+				dataConnection.on('error',function(err){
+					console.log("data connection error: "+err);
+				});
+				dataConnection.on('open',function(){
+					console.log("data connection opened");
+					console.log(" try sending kinect data");
+					// dataConnection.send(testKinectData);
+					dataConnection.send("sending test string");
+				});
+
+				if (dataConnection.open) {
+					console.log("data connection is open");
+				}
+
+
+			});
+
+			}
+			</script>
+			</head>
+			<body>
+			Testing
+			</body>
+			</html>

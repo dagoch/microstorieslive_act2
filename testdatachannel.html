@@ -159,6 +159,13 @@
 					};
 				});
 
+				socket.on('client_peer_id', function(data) {
+					console.log("client peer id = "+data);
+					kinectpeerid = data;
+					initKinectServer("socket on client_peer_id (testing)");
+
+				});
+
 				socket.on('kinect_peer_id', function (data) {
 					// this is how we get the peer id of the kinect data server
 					console.log("kinect server peer id = "+data);
@@ -477,14 +484,26 @@
 				socket.emit('backgroundimage', imageUrl);
 			}
 
+			// set up data connection to kinect server peer
 			var initKinectServer = function(where){   
 					// this was being called twice, so now log where it's called from, just to make sure
 				console.log("Connecting to kinect peer from "+where);
 				dataConnection = peer.connect(kinectpeerid);
 
+				if (dataConnection != null) {
+					console.log("dataConnection object is not null");
+
+				dataConnection.on('error',function(err){
+					console.log("data connection error: "+err);
+				});
+				dataConnection.on('open',function(){
+					console.log("data connection opened");
+				});
 				dataConnection.on('data', function(data) { 
-					// this is where we respond to kinect data
+					console.log(" this is where we respond to kinect data");
+					console.log("got data: "+data);
 					if (canvas != null) {
+						console.log("canvas is not null; process kinect data");
 						//console.log(data);
 
 						kinectJoints[data.position] = {x: (data.x)*modelWidth,
@@ -559,13 +578,14 @@
 					}
 
 				 });
-			}
+				}
+			};
 
 			var initPeerJS = function() {
 				// using peer for datachannel from kinect server, as well as for peer-to-peer audio between browsers
 				// first, connect peer
 
-						peer = new Peer({key: 'uohu08l7r6swcdi'});
+						peer = new Peer({key: 'uohu08l7r6swcdi'},{'debug':3});
 
 						// Get an ID from the PeerJS server
 						peer.on('open', function(id) {
@@ -578,7 +598,11 @@
 				  				// connect to kinect peer
 				  				initKinectServer("peer.on open; kinectpeerid already set; no dataconnection yet");
 				  			}
-						});		
+						});	
+
+						peer.on('error', function(err){
+							console.log("Got peer error: "+err);
+						});	
 
 				window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 				navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;

@@ -67,6 +67,7 @@ var io = require('socket.io').listen(httpServer);
 var clients = [];
 var actor_socket = null;
 var kinectpeerid = null;
+var clientpeerid = null;
 
 // Register a callback function to run when we have an individual connection
 // This is run for each individual user that connects
@@ -131,6 +132,13 @@ io.sockets.on('connection',
 		socket.on('kinect_peer_id', function(data) {
 			console.log("Received: 'kinect_peer_id' " + data);
 			socket.broadcast.emit('kinect_peer_id', data);
+			kinectpeerid = data;
+		});
+
+		// testing peer js data channel with browser-to-browser peering
+		socket.on('client_peer_id', function(data) {
+			console.log("Received: 'client_peer_id' " + data);
+			socket.broadcast.emit('client_peer_id', data);
 			kinectpeerid = data;
 		});
 

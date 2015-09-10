@@ -2,7 +2,9 @@
 // this is a daemon that reads a data file containing kinect osc data, and sends it out over a webrtc data 
 // channel to any registered peers
 
-console.log("line 5");
+var testKinectData = require('./kinecttestdata.json');
+
+console.log("starting");
 window = global;
 location = {protocol: 'http'};
 
@@ -35,7 +37,7 @@ console.log("Socket = "+Socket);
 
 
 
-var peer = new Peer({key: 'uohu08l7r6swcdi'});
+var peer = new Peer({key: 'uohu08l7r6swcdi'}, {'debug':3});
 var dataConnections = [];  // array of all data connections from browser peers
 console.log("Get an ID from the PeerJS server");
 
@@ -48,10 +50,31 @@ console.log("Get an ID from the PeerJS server");
 				   }
 				});
 
+				peer.on('error', function(err){
+					console.log("Got peer error: "+err);
+				});	
+
 			peer.on('connection', function(dataConnection) { 
 				// add this data connection to the list of client connections
 				dataConnections.push(dataConnection);
 				console.log("Now have "+dataConnections.length+" connections: "+dataConnections);
+
+
+				dataConnection.on('error',function(err){
+					console.log("data connection error: "+err);
+				});
+				dataConnection.on('open',function(){
+					console.log("data connection opened");
+					console.log(" try sending kinect data");
+					// dataConnection.send(testKinectData);
+					dataConnection.send("sending test string");
+				});
+
+				if (dataConnection.open) {
+					console.log("data connection is open");
+				}
+
+
 			});
 
 
