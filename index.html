@@ -30,7 +30,7 @@
 
 
 		<script type="text/javascript" src="/socket.io/socket.io.js"></script>
-		<script src="http://cdn.peerjs.com/0.3/peer.min.js"></script>
+		<script src="js/peer.min.js"></script>
 
 		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r69/three.min.js"></script>
 		<script type="text/javascript" src="js/character_script.js"></script>
@@ -89,6 +89,7 @@
 				});
 
 				socket.on('kinect', function (data) {
+					console.log("got kinect data: "+data);
 					if (canvas != null) {
 
 						kinectJoints[data.position] = {x: (data.x)*modelWidth,

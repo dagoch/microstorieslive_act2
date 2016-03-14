@@ -1,6 +1,6 @@
 //THREE.JS
 	var threeJSContainer;
-	
+
 	var width = 900, height = 400;
 	var camera, scene, renderer;
 
@@ -68,7 +68,7 @@ function initThreeJS() {
 	directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
 	directionalLight.position.set( -0.3, 0, -1 );
 	scene.add( directionalLight );
-	
+
 	var modelMaterial = new THREE.MeshFaceMaterial;
 
 	// headTex, bodyTex, armULTex, armDLTex, armURTex, armDRTex,
@@ -96,13 +96,13 @@ function initThreeJS() {
 		renderer.autoClear = true;
 		renderer.setSize( width, height );
 		threeJSContainer.appendChild(renderer.domElement);
-		
+
 	animate();
 }
 
 function buildStickBear( headTex, bodyTex, armULTex, armDLTex, armURTex, armDRTex,
 	legULTex, legDLTex, legURTex, legDRTex ){
-	
+
 	//HEAD
 		// var headGeo = new THREE.SphereGeometry(4,16,16);
 		var headGeo = new THREE.PlaneGeometry(12,8);
@@ -236,6 +236,7 @@ function buildStickBear( headTex, bodyTex, armULTex, armDLTex, armURTex, armDRTe
 			j.position.copy(jointsPos[i]);
 			j.oriPos = (jointsPos[i]);
 			joints.push(j);
+			console.log("added joint "+i);
 			scene.add(j);
 		}
 }
@@ -274,11 +275,11 @@ function update(){
 			hL2.position.copy(joints[0].position);
 
 			//SCALE_TIME!
-				//relate to BODY 
+				//relate to BODY
 				// hL2MoveX = Math.sqrt(Math.pow(headMoveX, 2));
 				// hL2MoveY = Math.sqrt(Math.pow(headMoveY, 2));
 
-				//relate to joints[5] 
+				//relate to joints[5]
 				hL2MoveX = Math.sqrt(Math.pow((joints[0].position.x - joints[5].position.x), 2))-5;
 				hL2MoveY = Math.sqrt(Math.pow((joints[0].position.y - joints[5].position.y), 2));
 
@@ -289,7 +290,7 @@ function update(){
 			hL1.position.copy(joints[5].position);
 
 			//SCALE_TIME!
-				//relate to joints[5] 
+				//relate to joints[5]
 				hL1MoveX = Math.sqrt(Math.pow((joints[4].position.x - joints[5].position.x), 2))-5;
 				hL1MoveY = Math.sqrt(Math.pow((joints[4].position.y - joints[5].position.y), 2));
 
@@ -300,7 +301,7 @@ function update(){
 			hR2.position.copy(joints[0].position);
 
 			//SCALE_TIME!
-				//relate to joints[3] 
+				//relate to joints[3]
 				hR2MoveX = Math.sqrt(Math.pow((joints[0].position.x - joints[3].position.x), 2))-5;
 				hR2MoveY = Math.sqrt(Math.pow((joints[0].position.y - joints[3].position.y), 2));
 
@@ -310,7 +311,7 @@ function update(){
 			hR1.position.copy(joints[3].position);
 
 				//SCALE_TIME!
-				//relate to joints[2] 
+				//relate to joints[2]
 				hR1MoveX = Math.sqrt(Math.pow((joints[2].position.x - joints[3].position.x), 2))-5;
 				hR1MoveY = Math.sqrt(Math.pow((joints[2].position.y - joints[3].position.y), 2));
 
@@ -321,7 +322,7 @@ function update(){
 			lL2.position.copy(joints[1].position);
 
 				//SCALE_TIME!
-				//relate to joints[9] 
+				//relate to joints[9]
 				lL2MoveX = Math.sqrt(Math.pow((joints[1].position.x - joints[9].position.x), 2))-3;
 				lL2MoveY = Math.sqrt(Math.pow((joints[1].position.y - joints[9].position.y), 2))-5;
 
@@ -331,7 +332,7 @@ function update(){
 			lL1.position.copy(joints[9].position);
 
 				//SCALE_TIME!
-				//relate to joints[8] 
+				//relate to joints[8]
 				lL1MoveX = Math.sqrt(Math.pow((joints[8].position.x - joints[9].position.x), 2));
 				lL1MoveY = Math.sqrt(Math.pow((joints[8].position.y - joints[9].position.y), 2))-6;
 
@@ -342,7 +343,7 @@ function update(){
 			lR2.position.copy(joints[1].position);
 
 				//SCALE_TIME!
-				//relate to joints[7] 
+				//relate to joints[7]
 				lR2MoveX = Math.sqrt(Math.pow((joints[1].position.x - joints[7].position.x), 2))-3;
 				lR2MoveY = Math.sqrt(Math.pow((joints[1].position.y - joints[7].position.y), 2))-5;
 
@@ -352,12 +353,12 @@ function update(){
 			lR1.position.copy(joints[7].position);
 
 				//SCALE_TIME!
-				//relate to joints[6] 
+				//relate to joints[6]
 				lR1MoveX = Math.sqrt(Math.pow((joints[6].position.x - joints[7].position.x), 2));
 				lR1MoveY = Math.sqrt(Math.pow((joints[6].position.y - joints[7].position.y), 2))-6;
 
-				lR1.scale.set(1, 1, 1+( lR1MoveX/12 + lR1MoveY/12 ));	
-	
+				lR1.scale.set(1, 1, 1+( lR1MoveX/12 + lR1MoveY/12 ));
+
 }
 
 function transX(geo, n){

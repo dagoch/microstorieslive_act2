@@ -22,15 +22,15 @@ sock = udp.createSocket("udp4", function(msg, rinfo) {
   try {
  var oscObj = osc.fromBuffer(msg);
  if (socketConnected) {
-//console.log("got udp msg on sock");
+ console.log("got udp msg on sock");
 //  console.log(util.inspect(oscObj, {depth: 10}));
   if (oscObj.elements[0].elements[0].address == "/bodyJoint" && c%4==0) {
-    console.log(JSON.stringify(oscObj)+",");
+//    console.log(JSON.stringify(oscObj)+",");
     var kinectdat = {position: oscObj.elements[0].elements[0].args[1].value,
       x: oscObj.elements[0].elements[0].args[2].value,
       y: oscObj.elements[0].elements[0].args[3].value,
       z: oscObj.elements[0].elements[0].args[4].value};
-//    console.log(c+": sending kinect data: "+util.inspect(kinectdat,{depth:10}));
+    console.log(c+": sending kinect data: "+util.inspect(kinectdat,{depth:10}));
    socket.emit('kinect', kinectdat);
 
    //socket.emit('kinect', oscObj);

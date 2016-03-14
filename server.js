@@ -95,10 +95,10 @@ io.sockets.on('connection',
 		});
 
 		socket.on('kinect', function(data) {
-      		console.log("Received: 'kinect' " + data);
+  //    		console.log("Received: 'kinect' " + data);
 			socket.broadcast.emit('kinect', data);
 			socket.kinect = data;
-			console.log(util.inspect(data, {depth: 10}));
+	//		console.log(util.inspect(data, {depth: 10}));
 		});
 
 		socket.on('otherkinecttest', function(data) {
