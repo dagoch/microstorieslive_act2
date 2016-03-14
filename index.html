@@ -1,36 +1,14 @@
 <!doctype html>
 <html lang="en">
 	<head>
-		<title>AstroBear</title>
 
-		<script type="text/javascript" src="js/ndollar.js"></script>
+		<title>CosmicCat</title>
 
-		<script type="text/javascript">
-			var nDollarRecognizer = null;
-			var points = new Array(); // point array for current stroke
-			var strokes = new Array(); // array of point arrays
-
-			function initRecognizer() {
-				nDollarRecognizer = new NDollarRecognizer(false);
-
-				// Custom Gestures
-				var addingStrokes = new Array();
-				var addingPoints = new Array();
-
-				var num = nDollarRecognizer.AddGesture("0", false, addingStrokes);
-			}
-
-			function runRecognizer() {
-				console.log(strokes);
-
-				var result = nDollarRecognizer.Recognize(strokes, false, false, true);
-				console.log(result);
-			}
-		</script>
 
 
 		<script type="text/javascript" src="/socket.io/socket.io.js"></script>
-		<script src="js/peer.min.js"></script>
+		<script type="text/javascript" src="js/peer.js"></script> 
+
 
 		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r69/three.min.js"></script>
 		<script type="text/javascript" src="js/character_script.js"></script>
@@ -122,7 +100,7 @@
 
 				// Receive mouse
 				socket.on('mouse', function (data) {
-					console.log(data);
+					//console.log(data);
 					if (data.mousedown) {
 						console.log("drawing from other user");
 						draw(data.startX, data.startY, data.endX, data.endY, data.color);
@@ -204,7 +182,6 @@
 				window.addEventListener('touchend', function(evt) {
 					if (mousedown) {
 						strokes.push(points);
-						runRecognizer();
 					}
 					mousedown = false;
 				});
@@ -216,8 +193,9 @@
 				window.addEventListener('touchleave', function(evt) {
 					if (mousedown) {
 						strokes.push(points);
-						runRecognizer();
-					}
+
+					}				
+
 					mousedown = false;
 				});
 
@@ -226,7 +204,6 @@
 
 					if (mousedown) {
 						strokes.push(points);
-						runRecognizer();
 					}
 					mousedown = false;
 				});
@@ -299,12 +276,6 @@
 				}, false);
 			}
 
-			function drawPointer(x, y, drawcolor) {
-				// ACTOR
-				//context.fillStyle=drawcolor;
-				//context.fillRect(x, y, 2, 2);
-			}
-
 			function draw(startX, startY, endX, endY, drawcolor) {
 				//console.log("Drawing: " + startX + " " + startY + " " + endX + " " + endY);
 				context.beginPath();
@@ -367,7 +338,8 @@
 			function initPeerJS() {
 console.log("in initPeerJS");
 				// Register for an API Key:	http://peerjs.com/peerserver
-				peer = new Peer({key: 'uohu08l7r6swcdi'});
+				//peer = new Peer({key: 'uohu08l7r6swcdi'});
+				var peer = new Peer({host: '104.131.82.13', port: 9000, path: '/'});
 
 				// Get an ID from the PeerJS server
 				peer.on('open', function(id) {

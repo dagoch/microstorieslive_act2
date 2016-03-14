@@ -42,26 +42,42 @@
 				}
 			}
 
+
+			var readyForNewAction = false;
+			
 			function runAction(which) {
-
-				console.log("*****do " + which);
-
 				if (which == "line") {
-					modelDrawing = !modelDrawing;
-					if (modelDrawing) {
-						display("Drawing");
-					} else {
-						display("Not Drawing");
+					if (readyForNewAction) {
+						modelDrawing = !modelDrawing;
+						if (modelDrawing) {
+							display("Line - Drawing");	
+						} else {
+							display("Line - Not Drawing");
+						}
+						readyForNewAction = false;
+
 					}
 				} else if (which == "W") {
-					display("W");
+					if (readyForNewAction) {
+						display("W - clearCanvas");
+						clearCanvas();
+						readyForNewAction = false;
+					}
 				} else if (which == "M") {
-					display("M");
+					if (readyForNewAction) {
+						display("M - cycleBackground()");			
+						cycleBackground();
+						readyForNewAction = false;
+					}
+
 				} else if (which == "H") {
-					// fly
-					display("H");
+					display("H - Change Mode");
+					readyForNewAction = true;
 				} else if (which == "X") {
-					clearCanvas();
+					if (readyForNewAction) {
+						clearCanvas();
+						readyForNewAction = false;
+					}
 				}
 			}
 
@@ -72,7 +88,9 @@
 
 
 		<script type="text/javascript" src="/socket.io/socket.io.js"></script>
-		<script src="js//peer.min.js"></script>
+
+		<script type="text/javascript" src="js/peer.js"></script>	
+
 
 		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r69/three.min.js"></script>
 		<script type="text/javascript" src="js/character_script.js"></script>
@@ -123,7 +141,10 @@
 				initSocket();
 				initPeerJS();
 				initThreeJS();
-				initRecognizer();
+
+				loadBackgrounds();
+				initRecognizer();				
+
 			}
 
 			window.addEventListener('load', init);
@@ -131,7 +152,12 @@
 
 			function initSocket() {
 
-				socket = io.connect('');
+
+//				socket = io.connect('');
+
+			
+				socket = io.connect();
+
 
 				socket.on('connect', function() {
 					console.log("Socket Connected");
@@ -373,6 +399,8 @@
 			function clearCanvas() {
 				context.clearRect(0,0,canvas.width,canvas.height);
 
+				socket.emit('clear', {});		
+
 				//context.fillStyle="rgba(255, 0, 0, 0.5)";
 				//context.fillRect(0,0,canvas.width,canvas.height);
 			}
@@ -420,7 +448,6 @@
 			function loadBackgrounds() {
 				socket.emit('listbackgrounds',null);
 			}
-
 
 
 			function cycleBackground() {
@@ -561,6 +588,12 @@
 			</select>
 			<input type="button" name="othertestkinect" value="Send Other Test Data" onclick="sendOtherData(document.getElementById('othertest').value);">
 			<input type="button" name="othertestkinect" value="Send Other Test Data C" onclick="sendOtherDataC(document.getElementById('othertest').value);">
+		</div>
+		<div id="info">
+			line - drawing/not drawing<br />
+			W - clear canvas<br />	
+			M - cycle background<br />
+			H - change mode - enable
 		</div>
 	</body>
 </html>
