@@ -375,6 +375,9 @@ console.log("in initPeerJS");
 				  peer_id = id;
 				  if (socket != null) {
 					socket.emit('peer_id', peer_id);
+
+					// get kinect peer id so we can get kinect data stream directly
+					/// maybe?  or let kinect call us?
 				  }
 				});
 
@@ -386,6 +389,42 @@ console.log("in initPeerJS");
 						audioElement.src = window.URL.createObjectURL(remoteStream) || remoteStream;
 						audioElement.play();
 
+					});
+				});
+
+				peer.on("connection", function(dataConnection) {
+					console.log("Got a new data connection! "+dataConnection);
+					dataConnection.on("data", function(data) {
+						// this will be kinect data
+						console.log("got kinect data: "+data);
+						if (canvas != null) {
+
+							kinectJoints[data.position] = {x: (data.x)*modelWidth,
+												y: (data.y)*modelHeight};
+
+							// Map jointsCat array to kinectJoints array, positions are different
+							if (data.position == 3) {
+								joints[0].position.set(kinectJoints[data.position].x, kinectJoints[data.position].y, 0);
+							} else if (data.position == 0) {
+								joints[1].position.set(kinectJoints[data.position].x, kinectJoints[data.position].y, 0);
+							} else if (data.position == 23) {
+								joints[2].position.set(kinectJoints[data.position].x, kinectJoints[data.position].y, 0);
+							} else if (data.position == 9) {
+								joints[3].position.set(kinectJoints[data.position].x, kinectJoints[data.position].y, 0);
+							}  else if (data.position == 21) {
+								joints[4].position.set(kinectJoints[data.position].x, kinectJoints[data.position].y, 0);
+							} else if (data.position == 5) {
+								joints[5].position.set(kinectJoints[data.position].x, kinectJoints[data.position].y, 0);
+							} else if (data.position == 19) {
+								joints[6].position.set(kinectJoints[data.position].x, kinectJoints[data.position].y, 0);
+							} else if (data.position == 17) {
+								joints[7].position.set(kinectJoints[data.position].x, kinectJoints[data.position].y, 0);
+							} else if (data.position == 15) {
+								joints[8].position.set(kinectJoints[data.position].x, kinectJoints[data.position].y, 0);
+							} else if (data.position == 13) {
+								joints[9].position.set(kinectJoints[data.position].x, kinectJoints[data.position].y, 0);
+							}
+						}
 					});
 				});
 			}

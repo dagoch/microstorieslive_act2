@@ -101,6 +101,20 @@ io.sockets.on('connection',
 	//		console.log(util.inspect(data, {depth: 10}));
 		});
 
+socket.on('getKinectPeerId', function(data) {
+	console.log('recieved getKinectPeerId: '+data);
+	socket.broadcast.emit('getKinectPeerId', data);
+});
+
+socket.on('kinectPeerId', function(data) {
+	console.log('Received kinectPeerId: '+data);
+	socket.broadcast.emit('kinectPeerId', data);
+	if (socket.peer_id != null) {
+		socket.broadcast.emit('clientPeerId',socket.peer_id);
+	}
+});
+
+
 		socket.on('otherkinecttest', function(data) {
 			console.log("Received otherkinecttest " + data);
 			sendOtherTestDataLine(data);
@@ -124,6 +138,7 @@ io.sockets.on('connection',
 		socket.on('peer_id', function(data) {
 			console.log("Received: 'peer_id' " + data);
 			socket.broadcast.emit('peer_id', data);
+						socket.broadcast.emit('clientPeerId', data);
 			socket.peer_id = data;
 		});
 
