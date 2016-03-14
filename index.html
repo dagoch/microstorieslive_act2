@@ -7,7 +7,7 @@
 
 
 		<script type="text/javascript" src="/socket.io/socket.io.js"></script>
-		<script type="text/javascript" src="js/peer.js"></script> 
+		<script type="text/javascript" src="js/peer.min.js"></script>
 
 
 		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r69/three.min.js"></script>
@@ -194,7 +194,7 @@
 					if (mousedown) {
 						strokes.push(points);
 
-					}				
+					}
 
 					mousedown = false;
 				});
@@ -338,8 +338,8 @@
 			function initPeerJS() {
 console.log("in initPeerJS");
 				// Register for an API Key:	http://peerjs.com/peerserver
-				//peer = new Peer({key: 'uohu08l7r6swcdi'});
-				var peer = new Peer({host: '104.131.82.13', port: 9000, path: '/'});
+				peer = new Peer({key: 'uohu08l7r6swcdi'});
+				//var peer = new Peer({host: '104.131.82.13', port: 9000, path: '/'});
 
 				// Get an ID from the PeerJS server
 				peer.on('open', function(id) {

@@ -4,7 +4,7 @@ var http = require('http');
 var fs = require('fs');
 var path = require('path');
 
-var PORT = 8888;
+var PORT = 8080;
 
 var backgroundsPath = "backgrounds";
 
@@ -84,7 +84,7 @@ io.sockets.on('connection',
 		for (var d = 0; d < mouseData.length; d++) {
 			socket.emit('mouse', mouseData[d]);
 		}
-		
+
 
 		socket.on('mouse', function(data) {
 			socket.broadcast.emit('mouse', data);
@@ -97,8 +97,8 @@ io.sockets.on('connection',
 			socket.text = data;
 		});
 
-		
-		socket.on('clear', function(data) {		
+
+		socket.on('clear', function(data) {
 
 			socket.broadcast.emit('clear', data);
 			mouseData.length = 0;
