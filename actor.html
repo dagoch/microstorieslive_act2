@@ -447,6 +447,103 @@
 			}
 
 			var initPeerJS = function() {
+				// first, init peer
+				peer = new Peer({key: 'uohu08l7r6swcdi'});
+
+				// Get an ID from the PeerJS server
+				peer.on('open', function(id) {
+					console.log('My peer ID is: ' + id);
+					peer_id = id;
+					if (socket != null) {
+						socket.emit('actor_peer_id', peer_id);
+						}
+				});
+
+				// this opens a dataconnection to get kinect data
+				peer.on("connection", function(dataConnection) {
+					console.log("Got a new data connection! "+dataConnection);
+					dataConnection.on("data", function(data) {
+						// this will be kinect data
+						console.log("got kinect data: "+data);
+						if (canvas != null) {
+							console.log(data);
+
+							kinectJoints[data.position] = {x: (data.x)*modelWidth,
+												y: (data.y)*modelHeight};
+
+							// Map jointsCat array to kinectJoints array, positions are different
+							if (data.position == 3) {
+								joints[0].position.set(kinectJoints[data.position].x, kinectJoints[data.position].y, 0);
+							} else if (data.position == 0) {
+								joints[1].position.set(kinectJoints[data.position].x, kinectJoints[data.position].y, 0);
+							} else if (data.position == 23) {
+								joints[2].position.set(kinectJoints[data.position].x, kinectJoints[data.position].y, 0);
+
+							} else if (data.position == 9) {
+								joints[3].position.set(kinectJoints[data.position].x, kinectJoints[data.position].y, 0);
+
+								var jointPoints = [];
+								if (joints[0].position != null &&
+									joints[2].position != null &&
+									joints[3].position != null &&
+									joints[4].position != null &&
+									joints[5].position != null) {
+
+									//console.log(joints[4].position.x);
+
+									jointPoints[0] = new Point(joints[4].position.x, joints[4].position.y);
+									jointPoints[1] = new Point(joints[5].position.x, joints[5].position.y);
+									jointPoints[2] = new Point(joints[0].position.x, joints[0].position.y);
+									jointPoints[3] = new Point(joints[3].position.x, joints[3].position.y);
+									jointPoints[4] = new Point(joints[2].position.x, joints[2].position.y);
+
+									//console.log(jointPoints);
+
+									var jointStrokes = [];
+									jointStrokes.push(jointPoints);
+
+									runRecognizer(jointStrokes);
+								}
+
+							}  else if (data.position == 21) {
+								joints[4].position.set(kinectJoints[data.position].x, kinectJoints[data.position].y, 0);
+
+								//var point = to2DXY(joints[4].position)
+								//console.log(point.x + " " + point.y);
+								// should be canvas.width/2 and canvas.height/2
+
+								if (modelDrawing) {
+									pmodeldrawx = modeldrawx;
+									pmodeldrawy = modeldrawy;
+
+									modeldrawx = data.x * canvas.width/7 + canvas.width/2;
+									modeldrawy = data.y * canvas.height/3 * -1 + canvas.height/2;
+
+									if (pmodeldrawx != -1) {
+										draw(pmodeldrawx, pmodeldrawy, modeldrawx, modeldrawy, color);
+										sendmouse(pmodeldrawx, pmodeldrawy, modeldrawx, modeldrawy, color, true);
+									}
+								}
+
+							} else if (data.position == 5) {
+								joints[5].position.set(kinectJoints[data.position].x, kinectJoints[data.position].y, 0);
+							} else if (data.position == 19) {
+								joints[6].position.set(kinectJoints[data.position].x, kinectJoints[data.position].y, 0);
+							} else if (data.position == 17) {
+								joints[7].position.set(kinectJoints[data.position].x, kinectJoints[data.position].y, 0);
+							} else if (data.position == 15) {
+								joints[8].position.set(kinectJoints[data.position].x, kinectJoints[data.position].y, 0);
+							} else if (data.position == 13) {
+								joints[9].position.set(kinectJoints[data.position].x, kinectJoints[data.position].y, 0);
+							}
+
+						}
+
+					});
+				});
+
+					// now try to get user media stream, so can have live audio
+					// this doesn't work at the moment
 				window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 				navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 				if (navigator.getUserMedia) {
@@ -464,16 +561,6 @@
 						audioElement.src = window.URL.createObjectURL(stream) || stream;
 						audioElement.play();
 
-						peer = new Peer({key: 'uohu08l7r6swcdi'});
-
-						// Get an ID from the PeerJS server
-						peer.on('open', function(id) {
-							console.log('My peer ID is: ' + id);
-							peer_id = id;
-							if (socket != null) {
-								socket.emit('actor_peer_id', peer_id);
-				  			}
-						});
 
 						peer.on('call', function(incoming_call) {
 
@@ -488,6 +575,7 @@
 								audioElement.play();
 							});
 						});
+
 
 
 					}, function(err) {

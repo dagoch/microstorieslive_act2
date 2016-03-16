@@ -145,6 +145,7 @@ socket.on('kinectPeerId', function(data) {
 		socket.on('actor_peer_id', function(data) {
 			console.log("Received: 'actor_peer_id' " + data);
 			socket.broadcast.emit('actor_peer_id', data);
+									socket.broadcast.emit('clientPeerId', data);
 			actor_socket = socket;
 			socket.peer_id = data;
 		});
